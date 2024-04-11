@@ -41,7 +41,13 @@ struct ContentView: View {
                     .padding()
 
                 Button("Login") {
-                    self.selectedDestination = .newView
+                    LoginManager.login(username: self.username, password: self.password) { success in
+                        if success {
+                            self.selectedDestination = .newView
+                        } else {
+                            // Handle login failure
+                        }
+                    }
                 }
                 .buttonStyle(DarkRedButtonStyle())
 
@@ -55,11 +61,8 @@ struct ContentView: View {
     }
 }
 
-
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
 }
-
