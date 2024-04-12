@@ -40,6 +40,7 @@ struct NewView: View {
 
 // Example subview for displaying an astronomy picture of the day
 struct AstronomyPictureOfTheDay: View {
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("Astronomy Picture of the Day")

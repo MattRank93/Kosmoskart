@@ -2,21 +2,33 @@ import SwiftUI
 
 struct RegisterView: View {
     @Environment(\.presentationMode) var presentationMode // Used to dismiss the view
-    @State private var name: String = ""
+    @State private var username: String = ""
+    @State private var firstName: String = ""
+    @State private var lastName: String = ""
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var confirmPassword: String = ""
     @State private var validationMessage: String = "" // To display validation messages
-
+    
+    
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("Register")
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
-            TextField("Name", text: $name)
+            TextField("Username", text: $username)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding(.top, 20)
+
+            TextField("First Name", text: $firstName)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.top, 10)
+
+            TextField("Last Name", text: $lastName)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.top, 10)
 
             TextField("Email", text: $email)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -37,7 +49,9 @@ struct RegisterView: View {
             }
 
             Button("Register") {
+                print("the user being registered: ")
                 registerUser()
+                
             }
             .buttonStyle(DarkRedButtonStyle())
             .padding(.top, 20)
@@ -46,10 +60,11 @@ struct RegisterView: View {
         }
         .padding()
     }
+    
 
     private func registerUser() {
         // Basic validation
-        if name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty {
+        if username.isEmpty || firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty {
             validationMessage = "Please fill in all fields."
             return
         }
@@ -59,18 +74,21 @@ struct RegisterView: View {
             return
         }
 
-        // Add more validation checks as needed (e.g., email format, password strength)
-
-        // If all validations pass, simulate successful registration and dismiss view
-        validationMessage = ""
+        let user = UserModel(id: 0, username: username, firstname: firstName, lastname: lastName, email: email, password: password)
         
-        // Simulating successful registration process
-        // In a real app, you would probably perform some asynchronous operation here
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { // Simulate async operation delay
-            presentationMode.wrappedValue.dismiss() // Dismiss the view
-        }
-    }
-}
+        // Call register function from LoginManager
+        LoginManager.register(user: user) { success in
+             if success {
+                 // Registration successful
+                 self.presentationMode.wrappedValue.dismiss() // Dismiss the view
+             } else {
+                 // Registration failed
+                 validationMessage = "Registration failed. Please try again."
+             }
+         }
+     }
+ }
+
 
 struct DarkRedButtonStyle: ButtonStyle {
     func makeBody(configuration: Self.Configuration) -> some View {
