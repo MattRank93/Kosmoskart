@@ -33,6 +33,8 @@ struct LoginManager {
                     // Login successful
                     do {
                         let jwtResponse = try JSONDecoder().decode(LoginResponse.self, from: data)
+                        print("jwtResponse: \(jwtResponse.token)")
+
                         // Store JWT securely
                         KeychainService.saveToken(jwtResponse.token)
                         completion(true)
@@ -109,46 +111,9 @@ struct LoginManager {
 }
 
 
- func fetchData(using token: String, completion: @escaping (Result<Data, Error>) -> Void) {
-    let urlString = "http://192.168.0.111:8080/integrations/jwt-test"
-    guard let url = URL(string: urlString) else {
-        completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
-        return
-    }
-
-    var request = URLRequest(url: url)
-    request.httpMethod = "GET"
-    request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-    let task = URLSession.shared.dataTask(with: request) { data, response, error in
-        if let error = error {
-            completion(.failure(error))
-            return
-        }
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            completion(.failure(NSError(domain: "Invalid response", code: 0, userInfo: nil)))
-            return
-        }
-
-        guard (200...299).contains(httpResponse.statusCode) else {
-            completion(.failure(NSError(domain: "HTTP Error", code: httpResponse.statusCode, userInfo: nil)))
-            return
-        }
-
-        if let data = data {
-            completion(.success(data))
-        } else {
-            completion(.failure(NSError(domain: "No data", code: 0, userInfo: nil)))
-        }
-    }
-
-    task.resume()
-}
-
 
 struct KeychainService {
-    static let service = "YourAppName"
+    static let service = "KosmosKartan"
 
     static func saveToken(_ token: String) {
         let tokenData = token.data(using: .utf8)!
@@ -172,6 +137,41 @@ struct KeychainService {
         
         print("Token saved successfully")
     }
+    
+    
+    static func retrieveToken() -> String? {
+        
+        print("fetching token from keystore")
+
+        // Create a query dictionary for retrieving the token
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        
+        var tokenData: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &tokenData)
+        guard status == errSecSuccess else {
+            print("Error retrieving token: \(status)")
+            return nil
+        }
+        
+        guard let data = tokenData as? Data else {
+            print("Error converting token data")
+            return nil
+        }
+        
+        guard let token = String(data: data, encoding: .utf8) else {
+            print("Error decoding token data")
+            return nil
+        }
+        
+        return token
+    }
+    
+    
 }
 
 

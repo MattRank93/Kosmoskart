@@ -92,16 +92,18 @@ struct AstronomyPictureOfTheDay: View {
             }
         }
         .onAppear {
-            fetchDailyPhoto()
+            print("Fetching daily photo...")
+            fetchDailyPhoto(bearerToken: KeychainService.retrieveToken() ?? "")
         }
     }
     
-    private func fetchDailyPhoto() {
+    private func fetchDailyPhoto(bearerToken: String) {
         isLoading = true
-        API.getDailyPhoto(bearerToken: "YOUR_BEARER_TOKEN") { result in
+        API.getDailyPhoto(bearerToken: bearerToken) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let dailyPhoto):
+                    print("Success fetching daily photo")
                     self.dailyPhoto = dailyPhoto
                 case .failure(let error):
                     print("Error fetching daily photo: \(error)")
@@ -110,6 +112,7 @@ struct AstronomyPictureOfTheDay: View {
             }
         }
     }
+
 }
 
 // Example subview for navigation menu
