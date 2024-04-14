@@ -1,46 +1,53 @@
+// NewView.swift
+
 import SwiftUI
 
 struct NewView: View {
+    @State private var selectedIndex: Int? = 0 // Declare selectedIndex as an optional State variable
+
     // Example data for celestial events. You might fetch this from an API in a real app.
     let celestialEvents = ["Meteor Shower Tonight", "Jupiter at Opposition", "Full Moon"]
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("Welcome to KosmosKart!")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+            VStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Welcome to KosmosKart!")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
 
-                    // Feature: Astronomy Picture of the Day
-                    AstronomyPictureOfTheDay()
+                        // Feature: Astronomy Picture of the Day
+                        AstronomyPictureOfTheDay()
 
-                    // Feature: Celestial Events
-                    VStack(alignment: .leading) {
-                        Text("Celestial Events")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        ForEach(celestialEvents, id: \.self) { event in
-                            Text(event)
-                                .padding(.vertical, 4)
+                        // Feature: Celestial Events
+                        VStack(alignment: .leading) {
+                            Text("Celestial Events")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                            ForEach(celestialEvents, id: \.self) { event in
+                                Text(event)
+                                    .padding(.vertical, 4)
+                            }
                         }
+
+                        // Feature: Navigation to other sections of the app
+                        NavigationMenu()
+
+                        Spacer()
                     }
-
-                    // Feature: Navigation to other sections of the app
-                    NavigationMenu()
-
-                    Spacer()
+                    .padding()
                 }
-                .padding()
+                .navigationTitle("KosmosKart Home")
+
+                BottomBar(selectedIndex: $selectedIndex) // Pass selectedIndex to BottomBar
             }
-            .navigationTitle("KosmosKart Home")
         }
     }
 }
 
 // Example subview for displaying an astronomy picture of the day
 struct AstronomyPictureOfTheDay: View {
-    
     var body: some View {
         VStack(alignment: .leading) {
             Text("Astronomy Picture of the Day")

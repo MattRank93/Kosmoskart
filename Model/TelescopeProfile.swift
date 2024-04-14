@@ -8,8 +8,8 @@
 import Foundation
 
 
-struct TelescopeModel {
-    let id: Int
+struct TelescopeModel: Identifiable {
+    let id: UUID
     let userId: Int
     let nameModel: String
     let manufacturer: String?

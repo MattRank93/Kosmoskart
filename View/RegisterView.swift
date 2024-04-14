@@ -80,8 +80,9 @@ struct RegisterView: View {
         LoginManager.register(user: user) { success in
              if success {
                  // Registration successful
-                 self.presentationMode.wrappedValue.dismiss() // Dismiss the view
-             } else {
+                 DispatchQueue.main.async {
+                     self.presentationMode.wrappedValue.dismiss()
+                 }             } else {
                  // Registration failed
                  validationMessage = "Registration failed. Please try again."
              }
