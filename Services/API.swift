@@ -1,61 +1,53 @@
-////
-////  API.swift
-////  Kosmoskart
-////
-////  Created by Matt R on 4/11/24.
-////
-//
-//import Foundation
-//
-//struct API {
-//    static func fetchData(using token: String, completion: @escaping (Result<Data, Error>) -> Void) {
-//        let urlString = "http://192.168.0.111:8080/integrations/jwt-test"
-//        guard let url = URL(string: urlString) else {
-//            completion(.failure(NSError(domain: "Invalid URL", code: 0, userInfo: nil)))
-//            return
-//        }
-//
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "GET"
-//        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-//
-//        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-//            if let error = error {
-//                completion(.failure(error))
-//                return
-//            }
-//
-//            guard let httpResponse = response as? HTTPURLResponse else {
-//                completion(.failure(NSError(domain: "Invalid response", code: 0, userInfo: nil)))
-//                return
-//            }
-//
-//            guard (200...299).contains(httpResponse.statusCode) else {
-//                completion(.failure(NSError(domain: "HTTP Error", code: httpResponse.statusCode, userInfo: nil)))
-//                return
-//            }
-//
-//            if let data = data {
-//                completion(.success(data))
-//            } else {
-//                completion(.failure(NSError(domain: "No data", code: 0, userInfo: nil)))
-//            }
-//        }
-//
-//        task.resume()
-//    }
-//}
-//
-//// Example usage:
-//let jwtToken = "your_jwt_token_here"
-//
-//API.fetchData(using: jwtToken) { result in
-//    switch result {
-//    case .success(let data):
-//        // Handle successful response data
-//        print("Received data:", data)
-//    case .failure(let error):
-//        // Handle error
-//        print("Error:", error)
-//    }
-//}
+import Foundation
+
+class API {
+    static func getDailyPhoto(bearerToken: String, completion: @escaping (Result<DailyPhotoResponse, Error>) -> Void) {
+        // Create URL
+        guard let url = URL(string: "http://192.168.0.111:8080/integrations/daily-photo") else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        // Create URL request
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        // Add authorization header
+        request.setValue("Bearer \(bearerToken)", forHTTPHeaderField: "Authorization")
+        
+        // Create URLSession task
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                completion(.failure(APIError.invalidResponse))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(APIError.noData))
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let dailyPhotoResponse = try decoder.decode(DailyPhotoResponse.self, from: data)
+                completion(.success(dailyPhotoResponse))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+        
+        // Start URLSession task
+        task.resume()
+    }
+}
+
+enum APIError: Error {
+    case invalidURL
+    case noData
+    case invalidResponse
+}

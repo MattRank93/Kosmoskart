@@ -3,6 +3,8 @@
 import SwiftUI
 
 struct NewView: View {
+    
+    
     @State private var selectedIndex: Int? = 0 // Declare selectedIndex as an optional State variable
 
     // Example data for celestial events. You might fetch this from an API in a real app.
@@ -19,6 +21,7 @@ struct NewView: View {
 
                         // Feature: Astronomy Picture of the Day
                         AstronomyPictureOfTheDay()
+                                                
 
                         // Feature: Celestial Events
                         VStack(alignment: .leading) {
@@ -46,20 +49,65 @@ struct NewView: View {
     }
 }
 
+
+
 // Example subview for displaying an astronomy picture of the day
 struct AstronomyPictureOfTheDay: View {
+    @State private var dailyPhoto: DailyPhotoResponse?
+    @State private var isLoading = false
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("Astronomy Picture of the Day")
                 .font(.title2)
                 .fontWeight(.semibold)
-            // Placeholder image, replace with actual image fetching mechanism
-            Image(systemName: "photo")
-                .resizable()
-                .scaledToFit()
-                .frame(height: 200)
-                .cornerRadius(10)
-                .padding(.vertical, 8)
+                .padding(.bottom, 4)
+            
+            if isLoading {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .padding(.vertical, 8)
+            } else if let dailyPhoto = dailyPhoto {
+                if let imageUrlString = dailyPhoto.url, let imageUrl = URL(string: imageUrlString) {
+                    AsyncImage(url: imageUrl) { image in
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 200)
+                            .cornerRadius(10)
+                            .padding(.vertical, 8)
+                    } placeholder: {
+                        Image(systemName: "photo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 200)
+                            .cornerRadius(10)
+                            .padding(.vertical, 8)
+                    }
+                }
+            } else {
+                Text("Failed to load image")
+                    .foregroundColor(.red)
+                    .padding(.vertical, 8)
+            }
+        }
+        .onAppear {
+            fetchDailyPhoto()
+        }
+    }
+    
+    private func fetchDailyPhoto() {
+        isLoading = true
+        API.getDailyPhoto(bearerToken: "YOUR_BEARER_TOKEN") { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let dailyPhoto):
+                    self.dailyPhoto = dailyPhoto
+                case .failure(let error):
+                    print("Error fetching daily photo: \(error)")
+                }
+                isLoading = false
+            }
         }
     }
 }

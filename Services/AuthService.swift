@@ -31,12 +31,13 @@ struct LoginManager {
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode == 200 {
                     // Login successful
-                    if let jwt = parseJWT(from: data) {
+                    do {
+                        let jwtResponse = try JSONDecoder().decode(LoginResponse.self, from: data)
                         // Store JWT securely
-                        KeychainService.saveToken(jwt)
+                        KeychainService.saveToken(jwtResponse.token)
                         completion(true)
-                    } else {
-                        print("Failed to parse JWT")
+                    } catch {
+                        print("Error decoding JWT response: \(error.localizedDescription)")
                         completion(false)
                     }
                 } else {
@@ -47,6 +48,7 @@ struct LoginManager {
             }
         }.resume()
     }
+
 
     
     static func register(user: UserModel, completion: @escaping (Bool) -> Void) {

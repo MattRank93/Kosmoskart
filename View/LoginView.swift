@@ -23,10 +23,16 @@ struct LoginView: View {
                 .padding()
 
             Button("Login") {
-                // Perform login validation here
-                isLoggedIn = true
+                // Call login API
+                LoginManager.login(username: username, password: password) { success in
+                    if success {
+                        isLoggedIn = true
+                    } else {
+                        // Handle login failure
+                        print("Login failed")
+                    }
+                }
             }
-            .padding()
 
             Spacer()
         }

@@ -18,6 +18,9 @@ struct BottomBar: View {
                 Image(systemName: "house")
             }
             .foregroundColor(selectedIndex == 0 ? .blue : .gray)
+            .onTapGesture {
+                print("NavigationLink to NewView tapped")
+            }
             
             Spacer()
             
@@ -29,21 +32,24 @@ struct BottomBar: View {
                 Image(systemName: "heart")
             }
             .foregroundColor(selectedIndex == 1 ? .blue : .gray)
+            .onTapGesture {
+                print("NavigationLink to TelescopeListView tapped")
+            }
             
             Spacer()
             
-            if let firstTelescope = mockTelescopes.first {
-                NavigationLink(
-                    destination: TelescopeDetailView(telescope: firstTelescope),
-                    tag: 2,
-                    selection: $selectedIndex
-                ) {
-                    Image(systemName: "person")
-                }
-                .foregroundColor(selectedIndex == 2 ? .blue : .gray)
-            } else {
-                // Handle the case where mockTelescopes is empty
-                EmptyView()
+            let user = UserModel(id: 1, username: "example", firstname: "John", lastname: "Doe", email: "john.doe@example.com", password: "password")
+
+            NavigationLink(
+                destination: UserProfileView(user: user, selectedIndex: $selectedIndex),
+                tag: 2,
+                selection: $selectedIndex
+            ) {
+                Image(systemName: "person")
+            }
+            .foregroundColor(selectedIndex == 2 ? .blue : .gray)
+            .onTapGesture {
+                print("NavigationLink to UserProfileView tapped")
             }
         }
         .padding()

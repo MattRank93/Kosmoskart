@@ -1,5 +1,7 @@
 import SwiftUI
 
+import SwiftUI
+
 // Define an enum to represent navigation destinations
 enum NavigationDestination: Hashable {
     case newView
@@ -7,33 +9,37 @@ enum NavigationDestination: Hashable {
     case loginView
 }
 
-
 struct ContentView: View {
     @State private var isLoggedIn: Bool = false
-    @State private var isNavigateToDestination: Bool = false
     @State private var selectedDestination: NavigationDestination?
 
     var body: some View {
         NavigationView {
             if isLoggedIn {
+
                 NewView() // Show NewView when logged in
                     .navigationBarItems(trailing: Button("Logout") {
                         isLoggedIn = false
+
                     })
-            }else {
+            } else {
                 VStack {
-                    NavigationLink(destination: destinationView, isActive: $isNavigateToDestination) { EmptyView() }
+                    NavigationLink(destination: LoginView(isLoggedIn: $isLoggedIn), tag: .loginView, selection: $selectedDestination) {
+                        EmptyView()
+                    }
                     
+                    NavigationLink(destination: RegisterView(), tag: .registerView, selection: $selectedDestination) {
+                        EmptyView()
+                    }
+
                     Button("Login") {
                         selectedDestination = .loginView
-                        isNavigateToDestination = true
                     }
                     .padding()
                     .buttonStyle(DarkRedButtonStyle())
 
                     Button("Register") {
                         selectedDestination = .registerView
-                        isNavigateToDestination = true
                     }
                     .padding()
                     .buttonStyle(DarkRedButtonStyle())
@@ -41,25 +47,17 @@ struct ContentView: View {
                 .navigationTitle("Welcome") // Optional: add a title to the navigation bar
             }
         }
-    }
-    
-    private var destinationView: some View {
-        switch selectedDestination {
-        case .loginView:
-            return AnyView(LoginView(isLoggedIn: $isLoggedIn))
-        case .registerView:
-            return AnyView(RegisterView())
-        default:
-            return AnyView(EmptyView())
+        .onChange(of: isLoggedIn) { newValue in
+            print("is logged in: \(newValue)")
+        }
+        .onChange(of: selectedDestination) { newValue in
+            print("selectedDestination \(String(describing: newValue))")
         }
     }
 }
 
-    
-    
-    
-    struct ContentView_Previews: PreviewProvider {
-        static var previews: some View {
-            ContentView()
-        }
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
     }
+}
