@@ -10,8 +10,7 @@ import SwiftUI
 
 struct UserProfileView: View {
     let user: UserModel
-    @Binding var selectedIndex: Int?
-    
+    @State private var selectedIndex: Int? = 3
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("User Profile")

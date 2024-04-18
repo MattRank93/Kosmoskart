@@ -5,7 +5,7 @@ import SwiftUI
 struct NewView: View {
     
     
-    @State private var selectedIndex: Int? = 0 // Declare selectedIndex as an optional State variable
+    @State private var selectedIndex: Int? = nil // Declare selectedIndex as an optional State variable
 
     // Example data for celestial events. You might fetch this from an API in a real app.
     let celestialEvents = ["Meteor Shower Tonight", "Jupiter at Opposition", "Full Moon"]
@@ -51,10 +51,10 @@ struct NewView: View {
 
 
 
-// Example subview for displaying an astronomy picture of the day
 struct AstronomyPictureOfTheDay: View {
     @State private var dailyPhoto: DailyPhotoResponse?
     @State private var isLoading = false
+    @State private var shouldFetchPhoto = true // Add a flag
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -92,8 +92,11 @@ struct AstronomyPictureOfTheDay: View {
             }
         }
         .onAppear {
-            print("Fetching daily photo...")
-            fetchDailyPhoto(bearerToken: KeychainService.retrieveToken() ?? "")
+            if shouldFetchPhoto { // Check the flag before fetching
+                print("Fetching daily photo...")
+                fetchDailyPhoto(bearerToken: KeychainService.retrieveToken() ?? "")
+                shouldFetchPhoto = false // Set the flag to false after fetching
+            }
         }
     }
     
@@ -112,7 +115,6 @@ struct AstronomyPictureOfTheDay: View {
             }
         }
     }
-
 }
 
 // Example subview for navigation menu

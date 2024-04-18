@@ -8,52 +8,58 @@ struct BottomBar: View {
         TelescopeModel(id: UUID(), userId: 1, nameModel: "Telescope 3", manufacturer: "Manufacturer C", type: "Type C", aperture: 150, focalLength: 1200, focalRatio: 8, mountType: "Dobsonian", maximumUsefulMagnification: 300, limitingStellarMagnitude: 13.5)
     ]
     
+    let user = UserModel(id: 1,
+                         username: "example_user",
+                         firstname: "John",
+                         lastname: "Doe",
+                         email: "john.doe@example.com",
+                         password: "password123")
+    
     var body: some View {
-        HStack {
-            NavigationLink(
-                destination: NewView(),
-                tag: 0,
-                selection: $selectedIndex
-            ) {
-                Image(systemName: "house")
+        VStack(spacing: 0) {
+            Divider()
+            HStack {
+                BottomBarButton(imageName: "house", index: 0, selectedIndex: $selectedIndex) {
+                    CommunityView()
+                }
+                Spacer()
+                BottomBarButton(imageName: "heart", index: 1, selectedIndex: $selectedIndex) {
+                    TelescopeListView(telescopes: mockTelescopes)
+                }
+                Spacer()
+                BottomBarButton(imageName: "person", index: 2, selectedIndex: $selectedIndex) {
+                    UserProfileView(user: user)
+                }
             }
-            .foregroundColor(selectedIndex == 0 ? .blue : .gray)
-            .onTapGesture {
-                print("NavigationLink to NewView tapped")
-            }
-            
-            Spacer()
-            
-            NavigationLink(
-                destination: TelescopeListView(telescopes: mockTelescopes),
-                tag: 1,
-                selection: $selectedIndex
-            ) {
-                Image(systemName: "heart")
-            }
-            .foregroundColor(selectedIndex == 1 ? .blue : .gray)
-            .onTapGesture {
-                print("NavigationLink to TelescopeListView tapped")
-            }
-            
-            Spacer()
-            
-            let user = UserModel(id: 1, username: "example", firstname: "John", lastname: "Doe", email: "john.doe@example.com", password: "password")
+            .padding()
+            .background(Color.white)
+            .shadow(color: .gray, radius: 2, x: 0, y: -1)
+        }
+    }
+}
 
-            NavigationLink(
-                destination: UserProfileView(user: user, selectedIndex: $selectedIndex),
-                tag: 2,
-                selection: $selectedIndex
-            ) {
-                Image(systemName: "person")
-            }
-            .foregroundColor(selectedIndex == 2 ? .blue : .gray)
-            .onTapGesture {
-                print("NavigationLink to UserProfileView tapped")
+struct BottomBarButton<Destination: View>: View {
+    let imageName: String
+    let index: Int
+    @Binding var selectedIndex: Int?
+    let destination: Destination
+    
+    init(imageName: String, index: Int, selectedIndex: Binding<Int?>, @ViewBuilder destination: () -> Destination) {
+        self.imageName = imageName
+        self.index = index
+        self._selectedIndex = selectedIndex
+        self.destination = destination()
+    }
+    
+    var body: some View {
+        NavigationLink(destination: destination, tag: index, selection: $selectedIndex) {
+            Button(action: {
+                selectedIndex = index
+                print("Button tapped, selectedIndex: \(selectedIndex ?? -1)")
+            }) {
+                Image(systemName: imageName)
+                    .foregroundColor(selectedIndex == index ? .blue : .gray)
             }
         }
-        .padding()
-        .background(Color.white)
-        .shadow(color: .gray, radius: 2, x: 0, y: -1)
     }
 }
