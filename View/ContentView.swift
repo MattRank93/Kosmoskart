@@ -1,6 +1,5 @@
 import SwiftUI
 
-import SwiftUI
 
 // Define an enum to represent navigation destinations
 enum NavigationDestination: Hashable {
@@ -12,7 +11,7 @@ enum NavigationDestination: Hashable {
 struct ContentView: View {
     @State private var isLoggedIn: Bool = false
     @State private var selectedDestination: NavigationDestination?
-    @State private var selectedIndex: Int? = 0
+
     var body: some View {
         NavigationView {
             if isLoggedIn {
@@ -46,7 +45,7 @@ struct ContentView: View {
                 }
                 .navigationTitle("Welcome") // Optional: add a title to the navigation bar
             }
-            Spacer() // Add spacer to push BottomBar to the bottom
+
         }
         .onChange(of: isLoggedIn) { newValue in
             print("is logged in: \(newValue)")

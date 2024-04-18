@@ -1,10 +1,6 @@
-// NewView.swift
-
 import SwiftUI
 
 struct NewView: View {
-    
-    
     @State private var selectedIndex: Int? = nil // Declare selectedIndex as an optional State variable
 
     // Example data for celestial events. You might fetch this from an API in a real app.
@@ -21,7 +17,6 @@ struct NewView: View {
 
                         // Feature: Astronomy Picture of the Day
                         AstronomyPictureOfTheDay()
-                                                
 
                         // Feature: Celestial Events
                         VStack(alignment: .leading) {
@@ -49,13 +44,11 @@ struct NewView: View {
     }
 }
 
-
-
 struct AstronomyPictureOfTheDay: View {
     @State private var dailyPhoto: DailyPhotoResponse?
     @State private var isLoading = false
     @State private var shouldFetchPhoto = true // Add a flag
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("Astronomy Picture of the Day")
@@ -117,7 +110,6 @@ struct AstronomyPictureOfTheDay: View {
     }
 }
 
-// Example subview for navigation menu
 struct NavigationMenu: View {
     var body: some View {
         VStack(alignment: .leading) {
@@ -132,7 +124,6 @@ struct NavigationMenu: View {
     }
 }
 
-// Preview provider for SwiftUI Canvas
 struct NewView_Previews: PreviewProvider {
     static var previews: some View {
         NewView()
