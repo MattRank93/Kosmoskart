@@ -48,7 +48,7 @@ class API {
     
     
     
-    static func getUserTelescopes(bearerToken: String, completion: @escaping (Result<[TelescopeProfile], Error>) -> Void) {
+    func getUserTelescopes(bearerToken: String, completion: @escaping (Result<[TelescopeProfile], Error>) -> Void) {
         // Create URL
         guard let url = URL(string: "http://192.168.0.111:8080/telescopes/by-userid") else {
             completion(.failure(APIError.invalidURL))

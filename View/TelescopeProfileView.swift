@@ -1,55 +1,40 @@
 import SwiftUI
 
 struct TelescopeListView: View {
-    let telescopes: [TelescopeModel]
-    @State private var selectedIndex: Int? = 2
+    @ObservedObject var viewModel = TelescopeListViewModel()
+
     var body: some View {
         NavigationView {
             VStack {
-                List(telescopes) { telescope in
+                List(viewModel.telescopes) { telescope in
                     NavigationLink(destination: TelescopeDetailView(telescope: telescope)) {
                         Text(telescope.nameModel)
                     }
                 }
                 .navigationTitle("Telescopes")
-                
-                Spacer()
-                
-                Button(action: {
+                .onAppear {
                     // Call the method to retrieve info and log it out
-                    retrieveInfoAndLog(bearerToken: KeychainService.retrieveToken() ?? "")
-                }) {
-                    Text("Retrieve Info and Log")
+                    viewModel.fetchTelescopeData(bearerToken: KeychainService.retrieveToken() ?? "")
                 }
-            }
-        }
-    }
-    
-    func retrieveInfoAndLog(bearerToken: String) {
-        API.getUserTelescopes(bearerToken: bearerToken) { result in
-            switch result {
-            case .success(let telescopes):
-                print("Telescopes retrieved successfully: \(telescopes)")
-                // You can access the telescopes data here and perform any additional actions
-            case .failure(let error):
-                print("Error retrieving telescopes: \(error)")
+
+                Spacer()
             }
         }
     }
 }
 
 struct TelescopeDetailView: View {
-    let telescope: TelescopeModel
-    
+    let telescope: TelescopeProfile
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("Name: \(telescope.nameModel)")
-            Text("Manufacturer: \(telescope.manufacturer ?? "Unknown")") // Provide a default value for manufacturer
+            Text("Manufacturer: \(telescope.manufacturer ?? "Unknown")")
             Text("Type: \(telescope.type ?? "Unknown")")
             Text("Focal Length: \(telescope.focalLength ?? 0)")
             Text("Mount Type: \(telescope.mountType ?? "Unknown")")
             Text("Maximum Useful Magnification: \(telescope.maximumUsefulMagnification ?? 0)")
-            
+
             Spacer()
         }
         .padding()
@@ -57,8 +42,26 @@ struct TelescopeDetailView: View {
     }
 }
 
+class TelescopeListViewModel: ObservableObject {
+    @Published var telescopes: [TelescopeProfile] = []
+    var api = API() // Assuming you have an API class for network requests
+
+    func fetchTelescopeData(bearerToken: String) {
+        api.getUserTelescopes(bearerToken: bearerToken) { result in
+            switch result {
+            case .success(let telescopes):
+                DispatchQueue.main.async {
+                    self.telescopes = telescopes
+                }
+            case .failure(let error):
+                print("Error fetching telescopes: \(error)")
+            }
+        }
+    }
+}
+
 struct TelescopeListView_Previews: PreviewProvider {
     static var previews: some View {
-        TelescopeListView(telescopes: [])
+        TelescopeListView()
     }
 }
