@@ -18,6 +18,10 @@ struct TelescopeListView: View {
                 }
 
                 Spacer()
+                
+                NavigationLink(destination: AddTelescopeProfileView()) {
+                    Text("Add Telescope Profile")
+                }
             }
         }
     }

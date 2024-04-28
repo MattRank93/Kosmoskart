@@ -172,6 +172,36 @@ struct KeychainService {
     }
     
     
+    
+    
+    func decodeJWT(_ token: String) -> String? {
+        let segments = token.components(separatedBy: ".")
+        guard segments.count > 1 else {
+            print("Invalid token: Not enough segments")
+            return nil
+        }
+
+        var base64String = segments[1]
+        if base64String.count % 4 != 0 {
+            let padLength = 4 - base64String.count % 4
+            base64String += String(repeating: "=", count: padLength)
+        }
+
+        guard let data = Data(base64Encoded: base64String) else {
+            print("Error decoding base64")
+            return nil
+        }
+
+        guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
+            print("Invalid JSON")
+            return nil
+        }
+
+        return json["id"] as? String
+    }
+    
+    
+    
 }
 
 
