@@ -55,7 +55,11 @@ struct AstronomyPictureOfTheDay: View {
                 .font(.title2)
                 .fontWeight(.semibold)
                 .padding(.bottom, 4)
-            
+            Text("Astronomy Picture of the Day")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .padding(.bottom, 4)
+
             if isLoading {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())

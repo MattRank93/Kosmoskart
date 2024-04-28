@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct TelescopeModel: Identifiable {
+struct TelescopeModel: Codable, Identifiable {
     let id: UUID
     let userId: Int
     let nameModel: String

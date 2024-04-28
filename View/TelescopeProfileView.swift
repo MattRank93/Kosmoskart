@@ -1,5 +1,3 @@
-
-
 import SwiftUI
 
 struct TelescopeListView: View {
@@ -16,6 +14,25 @@ struct TelescopeListView: View {
                 .navigationTitle("Telescopes")
                 
                 Spacer()
+                
+                Button(action: {
+                    // Call the method to retrieve info and log it out
+                    retrieveInfoAndLog(bearerToken: KeychainService.retrieveToken() ?? "")
+                }) {
+                    Text("Retrieve Info and Log")
+                }
+            }
+        }
+    }
+    
+    func retrieveInfoAndLog(bearerToken: String) {
+        API.getUserTelescopes(bearerToken: bearerToken) { result in
+            switch result {
+            case .success(let telescopes):
+                print("Telescopes retrieved successfully: \(telescopes)")
+                // You can access the telescopes data here and perform any additional actions
+            case .failure(let error):
+                print("Error retrieving telescopes: \(error)")
             }
         }
     }
@@ -37,5 +54,11 @@ struct TelescopeDetailView: View {
         }
         .padding()
         .navigationTitle("Telescope Details")
+    }
+}
+
+struct TelescopeListView_Previews: PreviewProvider {
+    static var previews: some View {
+        TelescopeListView(telescopes: [])
     }
 }
